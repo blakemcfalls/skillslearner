@@ -1,0 +1,12 @@
+{
+  "name": "fieldwork",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A daily, hands-on defense technology and engineering course with interactive labs and spaced recall.",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "check": "node tools/validate.mjs --py",
+    "test": "node tools/validate.mjs --py && node --test tools/"
+  }
+}
