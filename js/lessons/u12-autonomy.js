@@ -388,7 +388,7 @@ export default {
       id: 'swarm-flocking', skill: 'swarm', title: 'Swarms: order from local rules', pre: ['control-feedback', 'linalg-vectors', 'rl-q-learning'],
       hook: 'No bird leads a flock. Each one watches a few neighbors and follows three simple rules, and the group moves as one.',
       body: [
-        'A swarm is many simple agents with no central controller. Each senses only its **neighbors** within some radius and reacts to them. In 1986 Craig Reynolds showed that three local rules are enough to produce flocking:',
+        'A swarm is many simple agents with no central controller. Each senses only its **neighbors** within some radius and reacts to them. In the late 1980s Craig Reynolds showed that three local rules are enough to produce flocking:',
         { list: ['**Separation**: steer away from neighbors that are too close.', '**Alignment**: steer toward the average heading of neighbors.', '**Cohesion**: steer toward the average position of neighbors.'] },
         'Group behavior that no individual was told to produce is called **emergent**. It is robust in a way centralized control is not: remove any agent and the rest carry on, and no single link or node is critical.',
         'It is also hard to engineer. You set local gains and get a global pattern, and the mapping between them is not obvious. Too little alignment and the group mills about; too little separation and agents collide; too much cohesion and they clump.',

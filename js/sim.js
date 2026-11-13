@@ -253,6 +253,9 @@ export function makeG(ctx, W, H, c) {
   return g;
 }
 
+// 'P_fa' -> P<sub>fa</sub> in control labels and readout names
+const sub = t => String(t).replace(/_\{([^}]+)\}|_([A-Za-z0-9θωλ]+)/g, '<sub>$1$2</sub>');
+
 const el = (tag, cls, html) => {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -315,18 +318,18 @@ export function mountSim(host, spec, opts = {}) {
       w.classList.add('ctl-toggle');
       const i = el('input'); i.type = 'checkbox'; i.checked = !!c.v;
       i.onchange = () => { p[c.k] = i.checked; if (c.re) reinit(); dirty = true; };
-      w.append(i, el('span', 'ctl-name', c.label));
+      w.append(i, el('span', 'ctl-name', sub(c.label)));
     } else if (c.type === 'select') {
       const sel = el('select');
       c.options.forEach(([val, lab]) => { const o = el('option', '', lab); o.value = val; sel.appendChild(o); });
       sel.value = c.v;
       sel.onchange = () => { p[c.k] = isNaN(+sel.value) || sel.value === '' ? sel.value : +sel.value; if (c.re) reinit(); dirty = true; };
-      w.append(el('span', 'ctl-name', c.label), sel);
+      w.append(el('span', 'ctl-name', sub(c.label)), sel);
     } else {
       const head = el('span', 'ctl-head');
       const out = el('output', 'ctl-val');
       const show = () => { out.textContent = (c.fmt ? c.fmt(p[c.k]) : num(p[c.k], 4)) + (c.unit ? ' ' + c.unit : ''); };
-      head.append(el('span', 'ctl-name', c.label), out);
+      head.append(el('span', 'ctl-name', sub(c.label)), out);
       const i = el('input'); i.type = 'range'; i.min = c.min; i.max = c.max; i.step = c.step ?? (c.max - c.min) / 200; i.value = c.v;
       i.oninput = () => { p[c.k] = +i.value; show(); if (c.re) reinit(); dirty = true; };
       outs[c.k] = { i, show };
@@ -354,7 +357,7 @@ export function mountSim(host, spec, opts = {}) {
     try { spec.draw(g, s, p, t); } catch (e) { g.text('Sim error: ' + e.message, 12, 20, colors.bad, { px: true }); console.error(e); }
     if (spec.read) {
       const rows = spec.read(s, p) || [];
-      reads.innerHTML = rows.map(([k, v]) => `<span class="rd"><span class="rd-k">${k}</span><span class="rd-v">${typeof v === 'number' ? num(v) : v}</span></span>`).join('');
+      reads.innerHTML = rows.map(([k, v]) => `<span class="rd"><span class="rd-k">${sub(k)}</span><span class="rd-v">${typeof v === 'number' ? num(v) : v}</span></span>`).join('');
     }
     if (!done && spec.goal && spec.goal(s, p)) { done = true; paintMission(); opts.onGoal && opts.onGoal(); }
   }

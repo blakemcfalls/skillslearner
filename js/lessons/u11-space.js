@@ -238,7 +238,7 @@ export default {
         'Large low-orbit constellations add **resilience**: losing a few satellites out of hundreds degrades service only slightly. That shift, from a few exquisite satellites to many replaceable ones, is the main architectural change in space systems this decade.',
       ],
       sim: {
-        h: 340,
+        h: 380,
         controls: [
           { k: 'alt', label: 'Altitude', min: 300, max: 2000, step: 10, v: 550, unit: 'km' },
           { k: 'n', label: 'Satellites in the plane', min: 4, max: 40, step: 1, v: 12 },
@@ -247,8 +247,8 @@ export default {
         init: () => ({ t: 0 }),
         step(s, p, dt) { s.t += dt * 0.08; },
         draw(g, s, p) {
-          const L = rad(lam0(p.alt, p.el)), R = RE + 2600, r = RE + p.alt;
-          g.view(-R, R, -R * 0.62, R * 0.62, { eq: true, pad: [8, 8, 8, 8] });
+          const L = rad(lam0(p.alt, p.el)), R = RE + 2400, r = RE + p.alt;
+          g.view(-R, R, -R, R, { eq: true, pad: [8, 8, 8, 8] });
           g.circle(0, 0, RE, g.c.bad, { w: 5 });
           earth(g);
           for (let k = 0; k < p.n; k++) {

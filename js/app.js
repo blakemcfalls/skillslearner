@@ -157,7 +157,7 @@ function codeExercise(lesson, onPass) {
     const passed = withTests && res.ok && res.out.includes('__PASS__');
     const text = (res.out || '').replace('__PASS__\n', '').trimEnd();
     if (res.boot) show(`${res.err}\nPython runs in your browser and needs a connection the first time. Your code is saved; try Run again.`, 'err');
-    else if (!res.ok) show((text ? text + '\n\n' : '') + tidyError(res.err), 'err');
+    else if (!res.ok) show((text ? text + '\n\n' : '') + tidyError(res.err, ta.value.split('\n').length), 'err');
     else if (withTests) show((text ? text + '\n\n' : '') + (passed ? 'All checks passed.' : 'Checks did not finish.'), passed ? 'ok' : 'err');
     else show(text || '(no output; use print() to see values)', '');
     if (passed) { store.patchLesson(lesson.id, { code: true }); onPass && onPass(); }
@@ -288,9 +288,8 @@ function viewLesson(id) {
   });
 
   if (l.code) addSection('Code it', 'Python', (sec, next) => {
-    const passed = !!store.lessonState(l.id).code;
     sec.appendChild(codeExercise(l));
-    next(passed ? 'Continue' : 'Continue');
+    next();
   });
 
   addSection('Lock it in', 'Finish', sec => {
@@ -407,7 +406,7 @@ function viewProgress() {
   const st = store.load(), d = store.today();
   const fc = store.forecast(14), fmax = Math.max(1, ...fc);
   const allCards = LESSONS.flatMap(cardIds), mat = store.maturity(allCards);
-  const weeks = 15, start = d - (weeks * 7 - 1) - ((store.dayToDate(d).getDay() + 6) % 7 === 6 ? 0 : 0);
+  const weeks = 15;
   const cells = [];
   for (let k = d - weeks * 7 + 1; k <= d; k++) {
     const a = st.days[k] ? st.days[k].r + st.days[k].l * 5 : 0;
@@ -432,7 +431,7 @@ function viewProgress() {
     </div></header>
     <section class="panel"><h2>Reviews coming up</h2><div class="fc" role="img" aria-label="Cards due over the next 14 days: ${fc.join(', ')}">${fc.map((v, i) => `<div class="fc-col"><span class="fc-v">${v || ''}</span><i style="height:${v / fmax * 100}%"></i><span class="fc-d">${i === 0 ? 'now' : '+' + i}</span></div>`).join('')}</div></section>
     <section class="panel"><h2>Last ${weeks} weeks</h2><div class="heat">${cells.join('')}</div></section>
-    <p class="fine legend"><span><i class="sw sw-a"></i> lessons done</span><span><i class="sw sw-b"></i> cards in long-term memory</span></p>
+    <p class="fine legend"><span>Skill bars:</span><span><i class="sw sw-a"></i> lessons done</span><span><i class="sw sw-b"></i> cards in long-term memory</span></p>
     ${trackRows}
     <section class="panel settings"><h2>Settings</h2>
       <label class="set"><span>New lessons per day</span><select data-s="newPerDay">${[1, 2, 3].map(v => `<option ${st.settings.newPerDay === v ? 'selected' : ''}>${v}</option>`).join('')}</select></label>

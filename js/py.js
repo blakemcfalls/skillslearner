@@ -18,6 +18,7 @@ onmessage = async (e) => {
     const w = { batched: (s) => { out += s + '\\n'; } };
     pyodide.setStdout(w); pyodide.setStderr(w);
     await pyodide.loadPackagesFromImports(code);
+    postMessage({ id, stage: 'run' });
     try {
       const ns = pyodide.globals.get('dict')();
       await pyodide.runPythonAsync(code, { globals: ns });
@@ -52,12 +53,12 @@ function getWorker() {
 }
 
 // Keep the last line of a Python traceback plus the line number inside user code.
-export function tidyError(err) {
+export function tidyError(err, userLines = Infinity) {
   const lines = String(err).trim().split('\n');
   const last = lines[lines.length - 1] || 'Error';
   const where = [...lines].reverse().find(l => /File "<exec>", line (\d+)/.test(l));
-  const ln = where && /line (\d+)/.exec(where)[1];
-  return ln ? `${last}  (line ${ln})` : last;
+  const ln = where && +/line (\d+)/.exec(where)[1];
+  return ln && ln <= userLines ? `${last}  (line ${ln})` : last;   // lines past the user's code belong to the checks
 }
 
 export function runPython(code, { timeout = 15000, onStage } = {}) {
@@ -74,7 +75,8 @@ export function runPython(code, { timeout = 15000, onStage } = {}) {
       resolve({ ok: false, out: '', err: job.loaded ? 'Stopped: the code ran for too long. Check for a loop that never ends.' : 'The Python runtime did not load. Check your connection and run again.', boot: !job.loaded });
     };
     const stage = onStage;
-    job.onStage = s => { job.loaded = true; clearTimeout(job.timer); job.timer = setTimeout(job.kill, timeout); stage && stage(s); };
+    // 'loaded': runtime is up (packages may still download). 'run': user code starts, so the limit applies from here.
+    job.onStage = s => { job.loaded = true; clearTimeout(job.timer); job.timer = setTimeout(job.kill, s === 'run' ? timeout : 60000); if (s === 'loaded' && stage) stage(s); };
     pending.set(id, job);
     w.postMessage({ id, base: PYODIDE, code });
   });

@@ -117,7 +117,7 @@ export default {
         { q: 'The fundamental of a square wave has amplitude $4/π$. What is the amplitude of its 5th harmonic?', num: 0.2546, tol: 0.005, why: '$4/(5π) ≈ 0.2546$: one fifth of the fundamental.' },
       ],
       code: {
-        prompt: 'Complete `square_partial(t, n_terms)`: the sum of the first `n_terms` odd harmonics of a square wave, $(4/π)·Σ sin((2k+1)t)/(2k+1)$ for $k = 0 … n\\_terms − 1$. `t` is a NumPy array.',
+        prompt: 'Complete `square_partial(t, n_terms)`: the sum of the first `n_terms` odd harmonics of a square wave, $(4/π)·Σ sin((2k+1)t)/(2k+1)$ for $k$ from 0 to `n_terms - 1`. `t` is a NumPy array.',
         starter: 'import numpy as np\n\ndef square_partial(t, n_terms):\n    total = np.zeros_like(t)\n    # add each odd harmonic\n    return 4 / np.pi * total\n\nt = np.array([np.pi / 2])\nprint(square_partial(t, 1), square_partial(t, 50))',
         solution: 'import numpy as np\n\ndef square_partial(t, n_terms):\n    total = np.zeros_like(t)\n    for k in range(n_terms):\n        h = 2 * k + 1\n        total = total + np.sin(h * t) / h\n    return 4 / np.pi * total\n\nt = np.array([np.pi / 2])\nprint(square_partial(t, 1), square_partial(t, 50))',
         tests: 'import numpy as np\n_t = np.array([np.pi / 2, -np.pi / 2, 0.0])\nassert np.allclose(square_partial(_t, 1), [4 / np.pi, -4 / np.pi, 0.0]), "with one term the result is (4/pi) sin t"\n_y = square_partial(_t, 400)\nassert abs(_y[0] - 1) < 0.01 and abs(_y[1] + 1) < 0.01, f"400 terms should be close to +1 and -1, got {_y[:2]}"\nassert abs(square_partial(np.array([np.pi / 2]), 2)[0] - 4 / np.pi * (1 - 1 / 3)) < 1e-12',

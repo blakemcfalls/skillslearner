@@ -414,11 +414,11 @@ export default {
         draw(g, s, p) {
           g.view(0, 10, 0, 5.2, { pad: [10, 10, 10, 10] });
           const c = caught(p);
-          TESTS.forEach(([u, L], i) => g.text(`T${i + 1}`, 5.1 + i * 0.8, 4.7, p['t' + i] ? g.c.ink : g.c.dim, { a: 'center', s: 12, bold: p['t' + i] }));
+          TESTS.forEach(([u, L], i) => g.text(`T${i + 1}`, 4.55 + i * 0.75, 4.7, p['t' + i] ? g.c.ink : g.c.dim, { a: 'center', s: 12, bold: p['t' + i] }));
           MUT.forEach(([name, f], r) => {
             const y = 3.7 - r;
             g.text(name, 0.1, y, g.c.ink, { s: 12, mono: false });
-            TESTS.forEach(([u, L, want], i) => { const kills = f(u, L) !== want; g.rect(4.8 + i * 0.8, y - 0.32, 0.62, 0.64, kills ? g.c.good : g.c.dim, { fa: p['t' + i] ? (kills ? 0.9 : 0.25) : 0.08, stroke: p['t' + i] ? g.c.ink : g.c.grid }); });
+            TESTS.forEach(([u, L, want], i) => { const kills = f(u, L) !== want; g.rect(4.25 + i * 0.75, y - 0.32, 0.6, 0.64, kills ? g.c.good : g.c.dim, { fa: p['t' + i] ? (kills ? 0.9 : 0.25) : 0.08, stroke: p['t' + i] ? g.c.ink : g.c.grid }); });
             g.text(c[r] ? 'caught' : 'ESCAPES', 9.95, y, c[r] ? g.c.good : g.c.bad, { a: 'right', s: 11, bold: true });
           });
         },
